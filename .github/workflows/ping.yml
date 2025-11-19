@@ -17,5 +17,6 @@ jobs:
         shell: bash
         run: |
           SITE="https://ping-me-silk.vercel.app/api/ping"
+          SECRET="${{secrets.CRON_SECRET}}"
 
-          /usr/bin/curl -s --max-time 10 "$SITE"
+          /usr/bin/curl -s --max-time 10 -H "x-cron-secret: $SECRET" "$SITE"
