@@ -13,10 +13,10 @@ jobs:
       - name: Ensure curl is installed
         run: sudo apt-get update && sudo apt-get install -y curl
 
-      - name: Pings sites
-        shell: bash
+      - name: Ping sites
+        shell: bash   # <- IMPORTANT FIX
         run: |
-          # Fix PATH so curl is always found
+          # Manually ensure curl is visible
           export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
           jitter() {
@@ -50,11 +50,10 @@ jobs:
             "hi-IN,en;q=0.7"
           )
 
-          # Initial delay
           jitter
 
           for SITE in "${SITES[@]}"; do
-            COUNT=$(( (RANDOM % 2) + 2 ))  # 2–3 requests per site
+            COUNT=$(( (RANDOM % 2) + 2 ))
 
             for ((i=1; i<=COUNT; i++)); do
               jitter
@@ -64,7 +63,7 @@ jobs:
               LANG="${LANGS[$RANDOM % ${#LANGS[@]}]}"
               REF="https://google.com/search?q=$RANDOM"
 
-              STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              STATUS=$(/usr/bin/curl -s -o /dev/null -w "%{http_code}" \
                 -A "$UA" \
                 -H "Accept-Language: $LANG" \
                 -H "Referer: $REF" \
