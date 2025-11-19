@@ -2,7 +2,7 @@ name: Ping
 
 on:
   schedule:
-    - cron: "0,30 * * * *"
+    - cron: "0,30 * * * *"   # every 30 minutes
   workflow_dispatch:
 
 jobs:
@@ -13,64 +13,9 @@ jobs:
       - name: Ensure curl is installed
         run: sudo apt-get update && sudo apt-get install -y curl
 
-      - name: Ping sites
-        shell: bash   # <- IMPORTANT FIX
+      - name: Ping site
+        shell: bash
         run: |
-          # Manually ensure curl is visible
-          export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+          SITE="https://ping-me-silk.vercel.app/api/ping"
 
-          jitter() {
-              local LOOPS=$(( (RANDOM % 100000) + 50000 )) 
-              for ((i=0; i<LOOPS; i++)); do :; done
-          }
-
-          SITES=(
-            "https://mesh-turborepo.onrender.com"
-            "https://readme-card-server-05r4.onrender.com"
-          )
-
-          PATHS=(
-            "/"
-            "/?t=$RANDOM"
-            "/?id=$RANDOM"
-            "/?u=$(date +%s)"
-            "/health"
-          )
-
-          UAs=(
-            "Mozilla/5.0 (Windows NT 10.0; Win64)"
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X)"
-            "Mozilla/5.0 (X11; Linux x86_64)"
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0)"
-          )
-
-          LANGS=(
-            "en-US,en;q=0.9"
-            "en-GB,en;q=0.8"
-            "hi-IN,en;q=0.7"
-          )
-
-          jitter
-
-          for SITE in "${SITES[@]}"; do
-            COUNT=$(( (RANDOM % 2) + 2 ))
-
-            for ((i=1; i<=COUNT; i++)); do
-              jitter
-
-              PATH="${PATHS[$RANDOM % ${#PATHS[@]}]}"
-              UA="${UAs[$RANDOM % ${#UAs[@]}]}"
-              LANG="${LANGS[$RANDOM % ${#LANGS[@]}]}"
-              REF="https://google.com/search?q=$RANDOM"
-
-              STATUS=$(/usr/bin/curl -s -o /dev/null -w "%{http_code}" \
-                -A "$UA" \
-                -H "Accept-Language: $LANG" \
-                -H "Referer: $REF" \
-                -H "X-Request-ID: $RANDOM$RANDOM" \
-                --max-time 15 \
-                "$SITE$PATH")
-
-              echo "Pinged: $SITE$PATH   →   Status: $STATUS"
-            done
-          done
+          /usr/bin/curl -s --max-time 10 "$SITE" > /dev/null
