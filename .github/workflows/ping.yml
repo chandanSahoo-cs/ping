@@ -20,8 +20,8 @@ jobs:
           export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
           jitter() {
-              local SECONDS=$(( 120 + RANDOM % 181 ))
-              sleep "$SECONDS"
+              local LOOPS=$(( (RANDOM % 100000) + 50000 )) 
+              for ((i=0; i<LOOPS; i++)); do :; done
           }
 
           SITES=(
