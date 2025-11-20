@@ -17,8 +17,8 @@ jobs:
         run: |
           echo "Generated at $(date)" > myfile.txt
 
-      - name: Install tools
-        run: sudo apt-get update && sudo apt-get install -y curl jq
+      # - name: Install tools
+      #   run: sudo apt-get update && sudo apt-get install -y curl jq
 
       - name: Upload file
         id: upload
