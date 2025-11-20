@@ -1,0 +1,45 @@
+name: Daily Auto Upload & Delete
+
+on:
+  schedule:
+    - cron: "0 0 * * *"     # Runs daily at midnight
+  workflow_dispatch:
+
+jobs:
+  daily-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create file
+        run: |
+          echo "Generated at $(date)" > myfile.txt
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y curl jq
+
+      - name: Upload file
+        id: upload
+        run: |
+          UPLOAD_RESPONSE=$(curl -s -X POST \
+            -F "files=@myfile.txt" \
+            https://personal-space-iota.vercel.app/api/files/upload)
+
+          echo "$UPLOAD_RESPONSE"
+
+          FILE_ID=$(echo "$UPLOAD_RESPONSE" | jq -r ".files[0].id")
+
+          echo "file_id=$FILE_ID" >> $GITHUB_OUTPUT
+
+      - name: Delete file
+        if: ${{ steps.upload.outputs.file_id != '' }}
+        run: |
+          curl -X DELETE \
+            -H "Content-Type: application/json" \
+            -d "{\"fileId\": \"${{ steps.upload.outputs.file_id }}\"}" \
+            https://personal-space-iota.vercel.app/api/files/delete
+
+      - name: Clean up
+        run: rm myfile.txt
