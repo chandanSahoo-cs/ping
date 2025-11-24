@@ -24,6 +24,7 @@ jobs:
         id: upload
         run: |
           UPLOAD_RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.AUTOMATE_SECRET }}" \
             -F "files=@myfile.txt" \
             https://personal-space-iota.vercel.app/api/files/upload)
 
