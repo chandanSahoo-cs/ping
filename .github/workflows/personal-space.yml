@@ -38,6 +38,7 @@ jobs:
         run: |
           curl -X DELETE \
             -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.AUTOMATE_SECRET }}" \
             -d "{\"fileId\": \"${{ steps.upload.outputs.file_id }}\"}" \
             https://personal-space-iota.vercel.app/api/files/delete
 
