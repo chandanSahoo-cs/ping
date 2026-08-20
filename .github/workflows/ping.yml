@@ -16,7 +16,7 @@ jobs:
       - name: Ping site
         shell: bash
         run: |
-          SITE="https://ping-me-silk.vercel.app/api/ping"
+          SITE="https://ping-me-daddy.vercel.app/api/ping"
           SECRET="${{secrets.CRON_SECRET}}"
 
           /usr/bin/curl -s -H "x-cron-secret: $SECRET" "$SITE"
